@@ -9,14 +9,20 @@ export const STATUS = {
   done: 'done',
 };
 
+const idlePrefix = 'Q?: ';
+
 export const defualtTheme = {
-  // spinner: {
-  //   interval: number;
-  //   frames: string[];
-  // };
-  prefix: { idle: chalk.magenta('Q: '), done: chalk.green('QA: '), loading: {
-    speed: 500
-  }},
+  spinner: {
+    interval: 80,
+    frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map((i) => i.padEnd(idlePrefix.length)),
+  },
+  prefix: {
+    idle: chalk.magenta(idlePrefix),
+    done: chalk.green('QA: '),
+    loading: {
+      speed: 500,
+    },
+  },
   icon: { cursor: `${figures.play} ` },
   style: {
     currentChoice: function (choice) {
@@ -57,19 +63,12 @@ export const defualtTheme = {
   // indentation: 10,
 };
 
-export function animatePrefix(frames, speed)
-{
-
-}
-// String.prototype.addPadding =   function(prefix)
-// {
-//   const prefixLength = getRawLength(prefix)
-//   return this.split("\n").map(line => " ".repeat(prefixLength) + line).join("\n")
-// }
-export function padStringLines(string, prefix)
-{
-  const prefixLength = getRawLength(prefix)
-  return string.split("\n").map(line => " ".repeat(prefixLength) + line).join("\n")
+export function padStringLines(string, prefix) {
+  const prefixLength = getRawLength(prefix);
+  return string
+    .split('\n')
+    .map((line) => ' '.repeat(prefixLength) + line)
+    .join('\n');
 }
 export function isSelectable(item) {
   return !Separator.isSeparator(item) && !item.disabled;

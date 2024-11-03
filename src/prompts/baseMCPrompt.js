@@ -2,7 +2,7 @@ import {
   createPrompt,
   useState,
   useKeypress,
-  usePrefix,
+  // usePrefix,
   usePagination,
   useRef,
   useMemo,
@@ -23,32 +23,38 @@ import { defualtTheme, isSelectable, normalizeChoices, padStringLines, STATUS } 
 import { _if, getValue } from '#utilities/util.js';
 import { isValue } from '#utilities/checks.js';
 import { getRawLength } from '#utilities/chalkUtils.js';
+import { usePrefix } from './usePrefix.js';
 
 const BaseMCPrompt = createPrompt(function (config, done) {
-  const [locked, setLocked] = useState(config?.delay > 0 ? true : false)
-  const [delay, setDelay] = useState(config?.delay)
-  const [status, setStatus] = useState(delay ? 'loading' : 'idle');
+  const [locked, setLocked] = useState(config?.delay > 0 ? true : false);
+  const [delay, setDelay] = useState(config?.delay);
+  const [status, setStatus] = useState(locked ? 'loading' : 'idle');
 
   const firstRender = useRef(true);
   const searchTimeoutRef = useRef();
   const theme = makeTheme(defualtTheme, config.theme);
 
-  // const prefix = usePrefix({ status, theme }) + (status === STATUS.loading ? "  ":"");
-  let prefix = theme.prefix[status] ?? ""
-  if (status === STATUS.loading) {
-    prefix = `${['', '.', '..', '...', '....', '.....'].at(5 - Math.ceil(delay / theme.prefix.loading.speed % 6)).padEnd(5)}`
-  }
+  const prefix = usePrefix({ status, theme });
+  // let prefix = theme.prefix[status] ?? '';
+  // if (status === STATUS.loading) {
+  //   prefix = `${['', '.', '..', '...', '....', '.....']
+  //     .at(5 - Math.ceil((delay / theme.prefix.loading.speed) % 6))
+  //     .padEnd(5)}`;
+  // }
 
-  useEffect(function () {
-    if (delay === 0) return setStatus("idle")
+  // useEffect(
+  //   function () {
+  //     if (delay === 0) return setStatus('idle');
 
-    const timer = setTimeout(function () {
-      // setLocked(false);
-      setDelay(Math.max(delay - theme.prefix.loading.speed, 0))
-    }, theme.prefix.loading.speed)
+  //     const timer = setTimeout(function () {
+  //       // setLocked(false);
+  //       setDelay(Math.max(delay - theme.prefix.loading.speed, 0));
+  //     }, theme.prefix.loading.speed);
 
-    return () => clearTimeout(timer)
-  }, [delay])
+  //     return () => clearTimeout(timer);
+  //   },
+  //   [delay],
+  // );
 
   const { loop = true, pageSize = 7 } = config;
 
@@ -75,21 +81,21 @@ const BaseMCPrompt = createPrompt(function (config, done) {
   // Safe to assume the cursor position always point to a Choice.
   const selectedChoice = items[active];
 
-  // useEffect(function () {
-  //   if (!locked) return
+  useEffect(function () {
+    if (!locked) return;
 
-  //   const timer = setTimeout(function () {
-  //     setLocked(false);
-  //     setStatus('idle')
-  //   }, config.delay)
+    const timer = setTimeout(function () {
+      setLocked(false);
+      setStatus('idle');
+    }, config.delay);
 
-  //   return () => clearTimeout(timer)
-  // }, [])
+    return () => clearTimeout(timer);
+  }, []);
 
   // handle key presses
   useKeypress((key, rl) => {
     clearTimeout(searchTimeoutRef.current);
-    if (delay) return;
+    if (locked) return;
 
     // Enter key => set status to done
     if (isEnterKey(key)) {
@@ -202,7 +208,7 @@ const BaseMCPrompt = createPrompt(function (config, done) {
     .join('\n');
   const choiceDescription = _if(selectedChoice.description, theme.style.description(selectedChoice.description), null);
   const firstLine = [prefix, message, helpMessage].filter(Boolean).join('');
-  const choices = padStringLines(page, prefix)
+  const choices = padStringLines(page, prefix);
   const moreLine = padStringLines(_if(choiceDescription, `\n${chalk.cyan('More:')}\n${choiceDescription}`, ''), prefix);
   const prompt = [firstLine, choices, moreLine, ansiEscapes.cursorHide];
   return prompt.join('\n');
