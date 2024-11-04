@@ -19,7 +19,7 @@ import {
 import figures from '@inquirer/figures';
 import ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
-import { defualtTheme, isSelectable, normalizeChoices, padStringLines, STATUS } from './common.js';
+import { defualtTheme, isSelectable, normalizeChoices, padStringLines, STATUS, toEmptyLines } from './common.js';
 import { _if, getValue } from '#utilities/util.js';
 import { isValue } from '#utilities/checks.js';
 import { getRawLength } from '#utilities/chalkUtils.js';
@@ -174,10 +174,21 @@ const BaseMCPrompt = createPrompt(function (config, done) {
   }
 
   const choiceDescription = _if(selectedChoice.description, theme.style.description(selectedChoice.description), null);
+
+  // first line of the promt
   const firstLine = [prefix, message, helpMessage].filter(Boolean).join('');
-  const choices = padStringLines(page, prefix);
+
+  // prompt choices
+  // replace choices when locked with empty lines to avoid flickering when unlocking
+  const choices = locked ? toEmptyLines(page) : padStringLines(page, prefix);
+
+  // lines below the choices (e.g. choice description)
   const moreLine = padStringLines(_if(choiceDescription, `\n${chalk.cyan('More:')}\n${choiceDescription}`, ''), prefix);
+
+  // prompt array
   const prompt = [firstLine, choices, moreLine, ansiEscapes.cursorHide];
+
+  // retrun prompt as a string
   return prompt.join('\n');
 });
 

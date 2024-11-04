@@ -95,6 +95,11 @@ export const defualtTheme = {
   // indentation: 10,
 };
 
+export function toEmptyLines(string) {
+  let lines = string.split('\n');
+  lines = lines.map((i) => '');
+  return lines.join('\n');
+}
 export function padStringLines(string, prefix) {
   const prefixLength = getRawLength(prefix);
   return string
