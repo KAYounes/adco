@@ -27,7 +27,6 @@ import { usePrefix } from './usePrefix.js';
 
 const BaseMCPrompt = createPrompt(function (config, done) {
   const [locked, setLocked] = useState(config?.delay > 0 ? true : false);
-  const [delay, setDelay] = useState(config?.delay);
   const [status, setStatus] = useState(locked ? 'loading' : 'idle');
 
   const firstRender = useRef(true);
@@ -35,26 +34,6 @@ const BaseMCPrompt = createPrompt(function (config, done) {
   const theme = makeTheme(defualtTheme, config.theme);
 
   const prefix = usePrefix({ status, theme });
-  // let prefix = theme.prefix[status] ?? '';
-  // if (status === STATUS.loading) {
-  //   prefix = `${['', '.', '..', '...', '....', '.....']
-  //     .at(5 - Math.ceil((delay / theme.prefix.loading.speed) % 6))
-  //     .padEnd(5)}`;
-  // }
-
-  // useEffect(
-  //   function () {
-  //     if (delay === 0) return setStatus('idle');
-
-  //     const timer = setTimeout(function () {
-  //       // setLocked(false);
-  //       setDelay(Math.max(delay - theme.prefix.loading.speed, 0));
-  //     }, theme.prefix.loading.speed);
-
-  //     return () => clearTimeout(timer);
-  //   },
-  //   [delay],
-  // );
 
   const { loop = true, pageSize = 7 } = config;
 
@@ -70,12 +49,10 @@ const BaseMCPrompt = createPrompt(function (config, done) {
 
     return { first, last };
   }, [items]);
-
   const defaultItemIndex = useMemo(() => {
     if (!('default' in config)) return -1;
     return items.findIndex((item) => isSelectable(item) && item.value === config.default);
   }, [config.default, items]);
-
   const [active, setActive] = useState(defaultItemIndex === -1 ? bounds.first : defaultItemIndex);
 
   // Safe to assume the cursor position always point to a Choice.
@@ -193,51 +170,15 @@ const BaseMCPrompt = createPrompt(function (config, done) {
 
   const whenAnswered = theme.style.message(config.whenAnswered, status);
   if (status === 'done') {
-    return `${prefix} ${whenAnswered}${theme.style.answer(selectedChoice.short)}`;
+    return `${prefix} ${message}${theme.style.answer(selectedChoice.short)}`;
   }
 
-  //   const choiceDescription = selectedChoice.description
-  //     ? `\n${theme.indentation}${theme.style.description(
-  //         selectedChoice.description.split('\n').join('\n' + theme.indentation),
-  //       )}`
-  //     : ``;
-
-  const paddedPages = page
-    .split('\n')
-    .map((i) => ' '.repeat(getRawLength(prefix)) + i)
-    .join('\n');
   const choiceDescription = _if(selectedChoice.description, theme.style.description(selectedChoice.description), null);
   const firstLine = [prefix, message, helpMessage].filter(Boolean).join('');
   const choices = padStringLines(page, prefix);
   const moreLine = padStringLines(_if(choiceDescription, `\n${chalk.cyan('More:')}\n${choiceDescription}`, ''), prefix);
   const prompt = [firstLine, choices, moreLine, ansiEscapes.cursorHide];
   return prompt.join('\n');
-  //   return `
-  // ${prefix} ${message} ${helpMessage}
-  // ${page}
-
-  // ${_if(choiceDescription, chalk.gray('More: '), '')}
-  // ${choiceDescription}
-  // `.filter();
-  //   return [
-  //     [prefix, message, helpMessage],
-  //     page,
-  //     '',
-  //     _if(choiceDescription, chalk.gray('More: '), ''),
-  //     choiceDescription,
-  //     ansiEscapes.cursorHide,
-  //   ]
-  //     .filter(function (v, i) {
-  //       if (v instanceof Array) {
-  //         return v.filter(Boolean);
-  //       }
-  //       return v !== undefined && v !== null;
-  //     })
-  //     .join('\n');
-
-  //   return `\n${[prefix, ' '.repeat(5), message, helpMessage, ' '.repeat(5), prefix].join(
-  //     ' ',
-  //   )}\n\n${page}\n${theme.indentation}${chalk.gray(figures.lineDashed4.repeat(20))}${choiceDescription}${ansiEscapes.cursorHide}\n\n\n\n\n\n\n`;
 });
 
 export { BaseMCPrompt };
