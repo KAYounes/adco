@@ -11,10 +11,42 @@ export const STATUS = {
 
 const idlePrefix = 'Q?: ';
 
+const spinners = {
+  classicSpinner: ['|', '/', '-', '\\'],
+  dotSpinner: ['.  ', '.. ', '...', '.. ', '.  '],
+  brailleSpinner: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'], // Note: Braille might not render on older Windows
+  pulseSpinner: ['◐', '◓', '◑', '◒'],
+  arrowSpinner: ['←', '↖', '↑', '↗', '→', '↘', '↓', '↙'],
+
+  // New spinners
+  squareSpinner: ['■', '□', '■', '□'], // Alternates between filled and empty squares
+  plusMinusSpinner: ['+', '×', '-', '×'], // Rotating plus and minus
+  lineBounceSpinner: ['-', '=', '≡', '=', '-'], // Bouncing line length
+  rotatingPipeSpinner: ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐'], // Spinning with corner pipes
+  triangleSpinner: ['◢', '◣', '◤', '◥'], // Rotating triangle
+  moonSpinner: ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'], // Phases of the moon
+  clockSpinner: ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'], // Clock emoji rotating through hours
+  heartsSpinner: ['💙', '💚', '💛', '💜', '💗'], // Rotating hearts
+
+  // For simpler ASCII environments
+  basicBounce: ['.', 'o', 'O', 'o', '.'], // Bouncing dot
+  expandingArrow: ['>', '>>', '>>>', '>>', '>'], // Expanding arrow
+  waveDots: ['∙∙∙', '●∙∙', '∙●∙', '∙∙●', '∙∙∙'], // Dots moving in a wave
+  snakeSpinner: ['▁', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃'], // Snake-like animation with bars
+  halfMoonSpinner: ['◑', '◒', '◐', '◓'], // Rotating half moon
+
+  // Character-based spinners
+  lineSpinner: ['-', '\\', '|', '/'], // Simple line spinner
+  circleSpinner: ['◴', '◷', '◶', '◵'], // Circular rotation
+  bounceBox: ['▖', '▘', '▝', '▗'], // Bouncing small box in corners
+
+  growingCircle: ['.', '..', '... ', ' ..', '  .', '  ?', '  .', ' ..', '...'],
+};
+
 export const defualtTheme = {
   spinner: {
-    interval: 80,
-    frames: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'].map((i) => i.padEnd(idlePrefix.length)),
+    interval: 130,
+    frames: spinners.growingCircle.map((i) => chalk.yellow(i.padEnd(idlePrefix.length))),
   },
   prefix: {
     idle: chalk.magenta(idlePrefix),
