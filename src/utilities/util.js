@@ -12,6 +12,10 @@ export function _if(query, ifTrue, ifFalse) {
   return getValue(ifFalse);
 }
 
+export function and(...args) {
+  return args.every(Boolean);
+}
+
 // internals
 // internals
 // internals
