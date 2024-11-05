@@ -20,7 +20,7 @@ export function and(...args) {
 // internals
 // internals
 
-export function getValue(query) {
+function getValue(query) {
   if (isFunction(query)) {
     return query();
   }
