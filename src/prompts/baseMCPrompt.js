@@ -1,28 +1,25 @@
+import { _if } from '#utilities/util.js';
 import {
   createPrompt,
-  useState,
+  isBackspaceKey,
+  isDownKey,
+  isEnterKey,
+  isNumberKey,
+  isUpKey,
+  makeTheme,
+  Separator,
+  useEffect,
   useKeypress,
+  useMemo,
   // usePrefix,
   usePagination,
   useRef,
-  useMemo,
-  useEffect,
-  isBackspaceKey,
-  isEnterKey,
-  isUpKey,
-  isDownKey,
-  isNumberKey,
-  Separator,
+  useState,
   ValidationError,
-  makeTheme,
 } from '@inquirer/core';
-import figures from '@inquirer/figures';
 import ansiEscapes from 'ansi-escapes';
 import chalk from 'chalk';
-import { defualtTheme, isSelectable, normalizeChoices, padStringLines, STATUS, toEmptyLines } from './common.js';
-import { _if, getValue } from '#utilities/util.js';
-import { isValue } from '#utilities/checks.js';
-import { getRawLength } from '#utilities/chalkUtils.js';
+import { defualtTheme, isSelectable, normalizeChoices, padStringLines, toEmptyLines } from './common.js';
 import { usePrefix } from './usePrefix.js';
 
 const BaseMCPrompt = createPrompt(function (config, done) {
@@ -160,7 +157,6 @@ const BaseMCPrompt = createPrompt(function (config, done) {
         return theme.style.disabled(`${disabledLabel} ${itemText}${itemUserArrowKeys}`);
       }
 
-      const padding = getRawLength(prefix) + getRawLength(itemText);
       const color = isActive ? theme.style.currentChoice : chalk.dim;
       return color(`${itemText}`);
     },
