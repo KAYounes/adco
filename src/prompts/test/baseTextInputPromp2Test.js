@@ -1,7 +1,7 @@
-import BaseTextInputPrompt from '#prompts/baseTextInputPrompt.js';
+import BaseTextInputPrompt from '#prompts/baseTextInputPrompt2.js';
 import { handleEmptySpaces } from '#prompts/common.js';
 
-export async function startTextInputPromptTest() {
+export async function startTextInputPrompt2Test() {
   const answer = await BaseTextInputPrompt({
     message: 'What is your name?',
     required: true,

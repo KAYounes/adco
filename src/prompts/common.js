@@ -1,59 +1,71 @@
-import figures from '@inquirer/figures';
-import { Separator } from '@inquirer/core';
-import chalk from 'chalk';
-import { getRawLength } from '#utilities/chalkUtils.js';
+import figures from "@inquirer/figures";
+import { Separator } from "@inquirer/core";
+import chalk from "chalk";
+import { getRawLength } from "#utilities/chalkUtils.js";
 
 export const STATUS = {
-  idle: 'idle',
-  loading: 'loading',
-  done: 'done',
+  idle: "idle",
+  loading: "loading",
+  done: "done",
 };
 
-const idlePrefix = 'Q?: ';
+const idlePrefix = "Q?: ";
 
 const spinners = {
-  classicSpinner: ['|', '/', '-', '\\'],
-  dotSpinner: ['.  ', '.. ', '...', '.. ', '.  '],
-  brailleSpinner: ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'], // Note: Braille might not render on older Windows
-  pulseSpinner: ['◐', '◓', '◑', '◒'],
-  arrowSpinner: ['←', '↖', '↑', '↗', '→', '↘', '↓', '↙'],
+  classicSpinner: ["|", "/", "-", "\\"],
+  dotSpinner: [".  ", ".. ", "...", ".. ", ".  "],
+  brailleSpinner: ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"], // Note: Braille might not render on older Windows
+  pulseSpinner: ["◐", "◓", "◑", "◒"],
+  arrowSpinner: ["←", "↖", "↑", "↗", "→", "↘", "↓", "↙"],
 
   // New spinners
-  squareSpinner: ['■', '□', '■', '□'], // Alternates between filled and empty squares
-  plusMinusSpinner: ['+', '×', '-', '×'], // Rotating plus and minus
-  lineBounceSpinner: ['-', '=', '≡', '=', '-'], // Bouncing line length
-  rotatingPipeSpinner: ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐'], // Spinning with corner pipes
-  triangleSpinner: ['◢', '◣', '◤', '◥'], // Rotating triangle
-  moonSpinner: ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'], // Phases of the moon
-  clockSpinner: ['🕛', '🕐', '🕑', '🕒', '🕓', '🕔', '🕕', '🕖', '🕗', '🕘', '🕙', '🕚'], // Clock emoji rotating through hours
-  heartsSpinner: ['💙', '💚', '💛', '💜', '💗'], // Rotating hearts
+  squareSpinner: ["■", "□", "■", "□"], // Alternates between filled and empty squares
+  plusMinusSpinner: ["+", "×", "-", "×"], // Rotating plus and minus
+  lineBounceSpinner: ["-", "=", "≡", "=", "-"], // Bouncing line length
+  rotatingPipeSpinner: ["┤", "┘", "┴", "└", "├", "┌", "┬", "┐"], // Spinning with corner pipes
+  triangleSpinner: ["◢", "◣", "◤", "◥"], // Rotating triangle
+  moonSpinner: ["🌑", "🌒", "🌓", "🌔", "🌕", "🌖", "🌗", "🌘"], // Phases of the moon
+  clockSpinner: [
+    "🕛",
+    "🕐",
+    "🕑",
+    "🕒",
+    "🕓",
+    "🕔",
+    "🕕",
+    "🕖",
+    "🕗",
+    "🕘",
+    "🕙",
+    "🕚",
+  ], // Clock emoji rotating through hours
+  heartsSpinner: ["💙", "💚", "💛", "💜", "💗"], // Rotating hearts
 
   // For simpler ASCII environments
-  basicBounce: ['.', 'o', 'O', 'o', '.'], // Bouncing dot
-  expandingArrow: ['>', '>>', '>>>', '>>', '>'], // Expanding arrow
-  waveDots: ['∙∙∙', '●∙∙', '∙●∙', '∙∙●', '∙∙∙'], // Dots moving in a wave
-  snakeSpinner: ['▁', '▃', '▄', '▅', '▆', '▇', '█', '▇', '▆', '▅', '▄', '▃'], // Snake-like animation with bars
-  halfMoonSpinner: ['◑', '◒', '◐', '◓'], // Rotating half moon
+  basicBounce: [".", "o", "O", "o", "."], // Bouncing dot
+  expandingArrow: [">", ">>", ">>>", ">>", ">"], // Expanding arrow
+  waveDots: ["∙∙∙", "●∙∙", "∙●∙", "∙∙●", "∙∙∙"], // Dots moving in a wave
+  snakeSpinner: ["▁", "▃", "▄", "▅", "▆", "▇", "█", "▇", "▆", "▅", "▄", "▃"], // Snake-like animation with bars
+  halfMoonSpinner: ["◑", "◒", "◐", "◓"], // Rotating half moon
 
   // Character-based spinners
-  lineSpinner: ['-', '\\', '|', '/'], // Simple line spinner
-  circleSpinner: ['◴', '◷', '◶', '◵'], // Circular rotation
-  bounceBox: ['▖', '▘', '▝', '▗'], // Bouncing small box in corners
+  lineSpinner: ["-", "\\", "|", "/"], // Simple line spinner
+  circleSpinner: ["◴", "◷", "◶", "◵"], // Circular rotation
+  bounceBox: ["▖", "▘", "▝", "▗"], // Bouncing small box in corners
 
-  growingCircle: ['.', '..', '... ', ' ..', '  .', '  ?', '  .', ' ..', '...'],
+  growingCircle: [".", "..", "... ", " ..", "  .", "  ?", "  .", " ..", "..."],
 };
 
 export const defualtTheme = {
   spinner: {
     interval: 130,
-    frames: spinners.growingCircle.map((i) => chalk.yellow(i.padEnd(idlePrefix.length))),
+    frames: spinners.growingCircle.map((i) =>
+      chalk.yellow(i.padEnd(idlePrefix.length))
+    ),
   },
   prefix: {
     idle: chalk.magenta(idlePrefix),
-    done: chalk.green('QA: '),
-    loading: {
-      speed: 500,
-    },
+    done: chalk.green("QA: "),
   },
   icon: { cursor: `${figures.play} ` },
   style: {
@@ -91,22 +103,28 @@ export const defualtTheme = {
       return chalk.gray.strikethrough(`${string}`);
     },
   },
-  helpMode: 'auto',
+  helpMode: "auto",
   // indentation: 10,
 };
 
-export function toEmptyLines(string) {
-  let lines = string.split('\n');
-  lines = lines.map((i) => '');
-  return lines.join('\n');
+export function handleEmptySpaces(string) {
+  return string.split(/\t|\s/).filter(Boolean).join(" ");
 }
+
+export function toEmptyLines(string) {
+  let lines = string.split("\n");
+  lines = lines.map((i) => "");
+  return lines.join("\n");
+}
+
 export function padStringLines(string, prefix) {
   const prefixLength = getRawLength(prefix);
   return string
-    .split('\n')
-    .map((line) => ' '.repeat(prefixLength) + line)
-    .join('\n');
+    .split("\n")
+    .map((line) => " ".repeat(prefixLength) + line)
+    .join("\n");
 }
+
 export function isSelectable(item) {
   return !Separator.isSeparator(item) && !item.disabled;
 }
@@ -115,7 +133,7 @@ export function normalizeChoices(choices) {
   return choices.map((choice) => {
     if (Separator.isSeparator(choice)) return choice;
 
-    if (typeof choice === 'string') {
+    if (typeof choice === "string") {
       return {
         value: choice,
         name: choice,
