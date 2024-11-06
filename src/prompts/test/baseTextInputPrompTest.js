@@ -1,8 +1,13 @@
 import BaseTextInputPrompt from '#prompts/baseTextInputPrompt.js';
+import { handleEmptySpaces } from '#prompts/common.js';
 
 export function startTextInputPromptTest() {
   BaseTextInputPrompt({
     message: 'What is your name?',
-    validate: () => false,
+    // required: true,
+    default: 'John Smith',
+    // validate: () => false,
+    transformer: (input) => handleEmptySpaces(input),
+    filter: (input) => handleEmptySpaces(input),
   });
 }
