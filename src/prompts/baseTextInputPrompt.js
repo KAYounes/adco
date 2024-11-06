@@ -28,8 +28,7 @@ const BaseTextInputPrompt = createPrompt((config, done) => {
     const noInput_and_inputNotRequired = !value && !required;
     const noInput_and_doNotUseDefualt = !value && !useDefault;
 
-    if (isEnterKey(key)) 
-    {
+    if (isEnterKey(key)) {
       const answer = _if(and(!value, defaultHint), '', value);
       const isValid = _if(and(required, !answer), 'A value is required', await validate(answer));
 
@@ -64,7 +63,6 @@ const BaseTextInputPrompt = createPrompt((config, done) => {
     else {
       //   console.log(`|${rl.line.trim()}|`);
       rl.clearLine(0); // Remove the tab character.
-      console.log(rl.line)
       setValue(rl.line); // read input
       setError(undefined);
     }
