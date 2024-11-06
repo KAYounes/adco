@@ -1,4 +1,4 @@
-import BaseTextInputPrompt from '#prompts/baseTextInputPrompt.js';
+import BaseTextInputPrompt from '#prompts/baseTextInputPrompt2.js';
 import { handleEmptySpaces } from '#prompts/common.js';
 
 export function startTextInputPromptTest() {
