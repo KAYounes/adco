@@ -95,11 +95,16 @@ export const defualtTheme = {
   // indentation: 10,
 };
 
+export function handleEmptySpaces(string) {
+  return string.split(/\t|\s/).filter(Boolean).join(' ');
+}
+
 export function toEmptyLines(string) {
   let lines = string.split('\n');
   lines = lines.map((i) => '');
   return lines.join('\n');
 }
+
 export function padStringLines(string, prefix) {
   const prefixLength = getRawLength(prefix);
   return string
@@ -107,6 +112,7 @@ export function padStringLines(string, prefix) {
     .map((line) => ' '.repeat(prefixLength) + line)
     .join('\n');
 }
+
 export function isSelectable(item) {
   return !Separator.isSeparator(item) && !item.disabled;
 }

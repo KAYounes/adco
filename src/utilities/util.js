@@ -16,6 +16,9 @@ export function and(...args) {
   return args.every(Boolean);
 }
 
+export function I(query) {
+  return query;
+}
 // internals
 // internals
 // internals
