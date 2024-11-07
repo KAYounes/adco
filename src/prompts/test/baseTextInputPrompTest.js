@@ -1,13 +1,14 @@
-import BaseTextInputPrompt from '#prompts/baseTextInputPrompt.js';
+import BaseTextInputPrompt from '#prompts/baseTextInputPrompt2.js';
 import { handleEmptySpaces } from '#prompts/common.js';
 
-export function startTextInputPromptTest() {
-  BaseTextInputPrompt({
+export async function startTextInputPromptTest() {
+  const answer = await BaseTextInputPrompt({
     message: 'What is your name?',
-    // required: true,
+    required: true,
     default: 'John Smith',
-    // validate: () => false,
-    transformer: (input) => handleEmptySpaces(input),
-    filter: (input) => handleEmptySpaces(input),
+    // filter: (x) => `you said: |${x}|`,
+    validate: (input) => (input?.length > 3 ? true : 'Answer too short (4)'),
   });
+
+  console.log(`answer: ${answer}`);
 }

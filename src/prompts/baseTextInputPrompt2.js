@@ -16,31 +16,45 @@ const BaseTextInputPrompt = createPrompt((config, done) => {
   const prefix = usePrefix({ status, theme });
   const { required = false, validate = () => true, filter = I, transformer = I } = config;
 
-  const [defaultInUse, setDefaultInUse] = useState(Boolean(config.default))
+  const [defaultInUse, setDefaultInUse] = useState(Boolean(config.default));
   const defaultHintInit = chalk.gray(` {${config.default}}`);
   let [useDefault, setUseDefault] = useState(true);
   const logs = [];
 
   useKeypress(async (key, rl) => {
     if (isEnterKey(key)) {
-
-      const answer = resolveAnswer(input, defaultInUse)
-      
-      if(isValidAnswer(input, required, validate))
-      {
+      const answer = resolveAnswer(input, defaultInUse, config.default);
+      const [valid, error] = isValidAnswer(answer, required, validate);
+      // console.log(`valid: ${valid}`);
+      if (valid) {
+        setInput(answer);
         setStatus('done');
-        done(input)
 
         if (typeof filter === 'function') {
           done(filter(answer));
         } else {
           done(answer);
         }
+      } else {
+        rl.write(input);
+        setError(error);
       }
-    }
-    else {
+    } else if (isBackspaceKey(key)) {
+      if (!input) {
+        if (!required) {
+          if (defaultInUse) {
+            setDefaultInUse(false);
+          }
+        } else {
+          setError('Default will be used since this answer is required.');
+        }
+      }
+
       setInput(rl.line); // read input
-      setError(undefined);
+      // setError(undefined); // clear errors
+    } else {
+      setInput(rl.line); // read input
+      setError(undefined); // clear errors
     }
   });
 
@@ -51,26 +65,34 @@ const BaseTextInputPrompt = createPrompt((config, done) => {
     return chalk.green(`${prefix} ${message} |${formattedValue}|`);
   }
 
-  const defaultHint = _if(useDefault, ' ' + defaultHintInit, '');
-  return [`${prefix} ${message}${defaultHint} ${formattedValue}`];
+  const defaultHint = _if(defaultInUse, ' ' + defaultHintInit, '');
+  return [`${prefix} ${message}${defaultHint} ${formattedValue}`, chalk.red.italic(errorMsg ?? '')];
 });
 
 export default BaseTextInputPrompt;
 
-function isValidAnswer(input, required, validate)
-{
-  if(!input)
-  {
-    if(required)
-    {
-      return false
+function isValidAnswer(input, required, validate) {
+  // console.log(input, required);
+  if (!input) {
+    if (required) {
+      return [false, 'This cannot be left empty!'];
     }
   }
 
-  return validate(input)
+  const validity = validate(input);
+
+  if (validity === true) {
+    return [true, ''];
+  }
+
+  // If validity is a string, use it as the error message
+  return [false, typeof validity === 'string' ? validity : 'Your answer was not valid!'];
 }
 
-function resolveAnswer(input, defaultInUse)
-{
-  
+function resolveAnswer(input, defaultInUse, defaultValue) {
+  if (!input) {
+    if (defaultInUse) return defaultValue;
+  }
+
+  return input;
 }
