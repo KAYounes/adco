@@ -19,6 +19,13 @@ export function and(...args) {
 export function I(query) {
   return query;
 }
+
+export function isEmpty(query) {
+  if (query?.length === undefined)
+    throw Error('function isEmpty(query) - logical error: query dose not have length property');
+
+  return !query.length;
+}
 // internals
 // internals
 // internals
