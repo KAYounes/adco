@@ -30,10 +30,11 @@ const BaseTextInputPrompt = createPrompt((config, done) => {
   const [logs, setLogs] = useState([]);
 
   useKeypress(async (key, rl) => {
+    setError(undefined);
     if (isEnterKey(key)) {
       const answer = resolveAnswer(input, defaultInUse, config.default);
       const [valid, error] = isValidAnswer(answer, required, validate);
-
+      logs.push('1');
       if (valid) {
         setInput(answer);
         setStatus('done');
@@ -44,11 +45,18 @@ const BaseTextInputPrompt = createPrompt((config, done) => {
           done(answer);
         }
       } else {
+        logs.push('2');
         rl.write(input);
         setError(error);
       }
     } else {
+      logs.push('3');
       const currentInput = rl.line;
+      setInput(currentInput);
+
+      if (!ignoreinput.current) {
+        setError(undefined);
+      }
 
       if (isEmpty(currentInput)) {
         setDefaultInUse(true);
@@ -81,10 +89,7 @@ const BaseTextInputPrompt = createPrompt((config, done) => {
           setInput(config.default);
           setDefaultInUse(false);
         }
-      } else {
-        setError(undefined); // clear errors
       }
-      setInput(currentInput); // read input
     }
   });
 
@@ -98,7 +103,7 @@ const BaseTextInputPrompt = createPrompt((config, done) => {
   const defaultHint = _if(defaultInUse, defaultHintInit, '');
   return [
     `${prefix} ${message} ${formattedValue}`,
-    [defaultHint, chalk.red.italic(errorMsg ?? ''), logs.slice(-10).join('\n')].filter(Boolean).join('\n'),
+    [defaultHint, chalk.red.italic(errorMsg ?? ''), logs.slice(0, 0).join(', ')].filter(Boolean).join('\n'),
   ];
 });
 

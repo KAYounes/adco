@@ -1,7 +1,7 @@
-import { isFunction, isValue } from './checks.js';
+import { isFunction, isValue } from "./checks.js";
 
 export function foo() {
-  console.log('\n foo \n');
+  console.log("\n foo \n");
 }
 
 export function _if(query, ifTrue, ifFalse) {
@@ -22,10 +22,17 @@ export function I(query) {
 
 export function isEmpty(query) {
   if (query?.length === undefined)
-    throw Error('function isEmpty(query) - logical error: query dose not have length property');
+    throw Error(
+      "function isEmpty(query) - logical error: query dose not have length property"
+    );
 
   return !query.length;
 }
+
+export function fallback(query, def) {
+  return query ?? def;
+}
+
 // internals
 // internals
 // internals
