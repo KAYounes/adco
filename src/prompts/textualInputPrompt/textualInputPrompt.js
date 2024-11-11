@@ -27,7 +27,7 @@ const TextualInputPrompt = createPrompt((config, done) => {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
   const [isDefaultActive, setIsDefaultActive] = useState(config.default);
-  const [showDefaultMsg, setShowDefaultMsg] = useState(Boolean(config.default));
+  // const [showDefaultMsg, setShowDefaultMsg] = useState(Boolean(config.default));
 
   const ignoreinput = useRef(false);
   const ignoreTimeout = useRef();
@@ -38,19 +38,29 @@ const TextualInputPrompt = createPrompt((config, done) => {
     await undefined; // this is needed for the prefix to update for some reason;
 
     const currentLine = lineReader.line;
-    setInput(currentLine);
+    logs.push("1");
+    logs.push(input)
     setError(undefined);
 
     if (isEnterKey(keyPressed)) {
+      logs.push("2");
       const answer = _resolve_answer(input, config.default, isDefaultActive);
 
       if (isEmpty(answer)) {
-        if (required) return setError("You need to answer this question!");
+        logs.push("3");
+        if (required) {
+          setError("You need to answer this question!");
+          return;
+        }
       } else if (validate(answer) !== true) {
+        logs.push("4");
         lineReader.write(input);
-        setInput(input);
-        return setError(validate(answer));
+        setInput(input)
+        setError(validate(answer));
+        return;
       }
+
+      logs.push("5");
 
       setInput(answer);
       setStatus("done");
@@ -58,32 +68,55 @@ const TextualInputPrompt = createPrompt((config, done) => {
       return;
     }
 
+    logs.push("6");
     if (isBackspaceKey(keyPressed)) {
-      // logs.push("1");
-      if (!ignoreinput.current) {
-        if (isEmpty(input)) {
-          // logs.push("2");
+      logs.push("7");
 
+      setInput(currentLine);
+      if (!ignoreinput.current) {
+        logs.push("8");
+        if (isEmpty(input)) {
+          logs.push("9");
           if (required)
             setError("Default cannot be removed for a required answer");
           else setIsDefaultActive(false);
         }
       } else if (ignoreTimeout.current) {
-        setError(error); // preserve error since it will be set to udnefined if backspace was pressed during the ignoreTImeout period
+        logs.push("10");
+        // setError(error); // preserve error since it will be set to udnefined if backspace was pressed during the ignoreTImeout period
         clearTimeout(ignoreTimeout.current);
       }
 
+      logs.push("11");
       ignoreTimeout.current = setTimeout(function () {
         ignoreinput.current = false;
       }, 100);
 
       ignoreinput.current = true;
+
+      return;
     }
+
+    logs.push("12");
+    if (keyPressed.name === "tab") {
+      logs.push("13");
+      if (isDefaultActive) {
+        logs.push("14");
+        lineReader.write(config.default);
+        setInput(config.default);
+      }
+
+      return;
+    }
+
+    logs.push("15");
+    setInput(currentLine);
   });
 
   const message = theme.style.message(config.message, status);
   let formattedValue = input;
 
+  setIsDefaultActive(isEmpty(input));
   if (status === "done") {
     return [
       [prefix, message, input].join(" "),
