@@ -38,8 +38,6 @@ const TextualInputPrompt = createPrompt((config, done) => {
     await undefined; // this is needed for the prefix to update for some reason;
 
     const currentLine = lineReader.line;
-
-    // logs.push(`|${currentLine}|`);
     setInput(currentLine);
     setError(undefined);
 
@@ -49,33 +47,51 @@ const TextualInputPrompt = createPrompt((config, done) => {
       if (isEmpty(answer)) {
         if (required) return setError("You need to answer this question!");
       } else if (validate(answer) !== true) {
-        logs.push("2");
         lineReader.write(input);
+        setInput(input);
         return setError(validate(answer));
-        // return;
       }
 
-      // setInput(answer);
+      setInput(answer);
       setStatus("done");
       done(filter(answer));
+      return;
     }
-    // else {
-    //   setInput(currentLine);
-    // }
+
+    if (isBackspaceKey(keyPressed)) {
+      // logs.push("1");
+      if (!ignoreinput.current) {
+        if (isEmpty(input)) {
+          // logs.push("2");
+
+          if (required)
+            setError("Default cannot be removed for a required answer");
+          else setIsDefaultActive(false);
+        }
+      } else if (ignoreTimeout.current) {
+        setError(error); // preserve error since it will be set to udnefined if backspace was pressed during the ignoreTImeout period
+        clearTimeout(ignoreTimeout.current);
+      }
+
+      ignoreTimeout.current = setTimeout(function () {
+        ignoreinput.current = false;
+      }, 100);
+
+      ignoreinput.current = true;
+    }
   });
 
   const message = theme.style.message(config.message, status);
   let formattedValue = input;
 
   if (status === "done") {
-    // return chalk.green(`${prefix} ${message} |${formattedValue}|`);
     return [
       [prefix, message, input].join(" "),
       logs.slice(0, log ? undefined : 0).join(", "),
     ];
   }
 
-  const defaultMessage = getDefaultMessage(config.default);
+  const defaultMessage = getDefaultMessage(config.default, isDefaultActive);
   const errorMessage = getErrorMessage(error);
 
   return [
@@ -97,8 +113,8 @@ const TextualInputPrompt = createPrompt((config, done) => {
 
 export default TextualInputPrompt;
 
-function getDefaultMessage(defaultValue) {
-  if (!defaultValue) return "";
+function getDefaultMessage(defaultValue, isDefaultActive) {
+  if (!defaultValue || !isDefaultActive) return "";
 
   return chalk.gray(
     `Default [${chalk.yellow(defaultValue)}]: ${chalk.underline(
