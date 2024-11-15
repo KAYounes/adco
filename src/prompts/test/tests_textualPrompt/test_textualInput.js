@@ -1,7 +1,7 @@
-import TextualInputPrompt from "#prompts/src/textualInputPrompt/textualInputPrompt.js";
+import TextualPrompt from "#prompts/src/textualPrompt/textualPrompt.js";
 
-export async function startTextualInputPromptTest() {
-  const answer = await TextualInputPrompt({
+export async function startTextualPromptTest() {
+  const answer = await TextualPrompt({
     message: "What is your name?",
     required: true,
     default: "John Smith",

@@ -15,7 +15,7 @@ import {
 import chalk from "chalk";
 const logs = [];
 const log = false;
-const TextualInputPrompt = createPrompt((config, done) => {
+const TextualPrompt = createPrompt((config, done) => {
   const {
     required = false,
     validate = () => true,
@@ -108,7 +108,7 @@ const TextualInputPrompt = createPrompt((config, done) => {
   );
 });
 
-export default TextualInputPrompt;
+export default TextualPrompt;
 //
 //
 //
