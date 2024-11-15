@@ -189,9 +189,8 @@ const BaseMCPrompt = createPrompt(function (config, done) {
     loop,
   });
 
-  const whenAnswered = theme.style.message(config.whenAnswered, status);
   if (status === "done") {
-    return `${prefix} ${message}${theme.style.answer(selectedChoice.short)}`;
+    return `${prefix}${message}${theme.style.answer(selectedChoice.short)}`;
   }
 
   const choiceDescription = _if(

@@ -1,12 +1,19 @@
-import { makeTheme, useEffect, useState } from '@inquirer/core';
+import { makeTheme, useEffect, useState } from "@inquirer/core";
+import { getRawLength } from "#utilities/chalkUtils.js";
 
-export function usePrefix({ status = 'idle', theme }) {
-  const [showLoader, setShowLoader] = useState(status === 'loading');
+export function usePrefix({ status = "idle", theme }) {
+  const [showLoader, setShowLoader] = useState(status === "loading");
   const [tick, setTick] = useState(0);
   const { prefix, spinner } = makeTheme(theme);
+  const maxLen = Math.max(
+    ...spinner.frames.map((e) => e.length),
+    prefix.idle.length ?? 0,
+    prefix.done.length ?? 0
+  );
 
+  // console.log(prefix, status, prefix[status]);
   useEffect(() => {
-    if (status === 'loading') {
+    if (status === "loading") {
       let inc = -1;
       setShowLoader(true);
 
@@ -23,9 +30,11 @@ export function usePrefix({ status = 'idle', theme }) {
   }, [status]);
 
   if (showLoader) {
-    return spinner.frames[tick];
+    return spinner.frames[tick].padEnd(maxLen);
   }
 
-  const iconName = status === 'loading' ? 'idle' : status;
-  return typeof prefix === 'string' ? prefix : prefix[iconName] ?? prefix['idle'];
+  const iconName = status === "loading" ? "idle" : status;
+  return typeof prefix === "string"
+    ? prefix.padEnd(maxLen)
+    : (prefix[iconName] ?? prefix["idle"]).padEnd(maxLen);
 }

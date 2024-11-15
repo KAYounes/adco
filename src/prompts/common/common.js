@@ -9,7 +9,7 @@ export const STATUS = {
   done: "done",
 };
 
-const idlePrefix = "Q?: ";
+// const idlePrefix = "Q?: ";
 
 const spinners = {
   classicSpinner: ["|", "/", "-", "\\"],
@@ -59,13 +59,11 @@ const spinners = {
 export const defualtTheme = {
   spinner: {
     interval: 130,
-    frames: spinners.growingCircle.map((i) =>
-      chalk.yellow(i.padEnd(idlePrefix.length))
-    ),
+    frames: spinners.growingCircle.map((el) => chalk.yellow(el)),
   },
   prefix: {
-    idle: chalk.magenta(idlePrefix),
-    done: chalk.green("QA: "),
+    idle: chalk.magenta(">>"),
+    done: chalk.green("✔"),
   },
   icon: { cursor: `${figures.play} ` },
   style: {
@@ -73,7 +71,7 @@ export const defualtTheme = {
       return chalk.green.underline(choice);
     },
     answer: function (string) {
-      return `: ${chalk.cyan(string)}`;
+      return ` => ${chalk.cyan(string)}`;
     },
     message: function (string, status) {
       switch (status) {

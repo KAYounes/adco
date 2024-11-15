@@ -92,7 +92,11 @@ const TextualInputPrompt = createPrompt((config, done) => {
   const message = resolve_prompt_msg(required, config.message, theme, status);
   const defaultMessage = resolve_default_msg(config.default, input);
   const errorMessage = resolve_error_msg(error);
-  let formattedValue = transformer(input);
+  let formattedValue = input;
+
+  if (status === STATUS.done)
+    formattedValue = theme.style.answer(formattedValue);
+  else formattedValue = transformer(input);
 
   return resolve_prompt(
     status,
