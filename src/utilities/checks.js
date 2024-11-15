@@ -18,3 +18,8 @@ export function isValue(query) {
 export function isString(query) {
   return typeof query === "string";
 }
+
+export function is_valid_function_name(query) {
+  const pattern = new RegExp(/^[a-zA-Z\$_][a-zA-Z\$_0-9]*$/);
+  return pattern.test(query);
+}
