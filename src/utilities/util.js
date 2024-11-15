@@ -33,6 +33,10 @@ export function fallback(query, def) {
   return query ?? def;
 }
 
+export function returnIfValue(query, def) {
+  return isValue(query) ? query : def;
+}
+
 // internals
 // internals
 // internals
