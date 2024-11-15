@@ -97,7 +97,7 @@ const TextualPrompt = createPrompt((config, done) => {
   let formattedValue = input;
 
   if (status === STATUS.done)
-    formattedValue = theme.style.answer(formattedValue);
+    formattedValue = theme.style.answer(filter(formattedValue));
   else formattedValue = transformer(input);
 
   return resolve_prompt(
