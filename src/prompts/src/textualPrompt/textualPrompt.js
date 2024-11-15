@@ -92,6 +92,8 @@ const TextualPrompt = createPrompt((config, done) => {
   const message = resolve_prompt_msg(required, config.message, theme, status);
   const defaultMessage = resolve_default_msg(config.default, input);
   const errorMessage = resolve_error_msg(error);
+  const help = chalk.gray(config.help ?? "");
+
   let formattedValue = input;
 
   if (status === STATUS.done)
@@ -102,6 +104,7 @@ const TextualPrompt = createPrompt((config, done) => {
     status,
     prefix,
     message,
+    help,
     formattedValue,
     defaultMessage,
     errorMessage
@@ -139,6 +142,7 @@ function resolve_prompt(
   status,
   prefix,
   message,
+  help,
   formattedValue,
   defaultMessage,
   errorMessage
@@ -148,7 +152,7 @@ function resolve_prompt(
   let second_line = "";
 
   let prompt = [prefix];
-  let aux_line = [defaultMessage, errorMessage];
+  let aux_line = [help, defaultMessage, errorMessage];
 
   prompt.push(message);
   prompt.push(gap);
