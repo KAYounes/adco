@@ -6,13 +6,14 @@ import {
   isBackspaceKey,
   isEnterKey,
   makeTheme,
+  useEffect,
   useKeypress,
   useRef,
   useState,
 } from "@inquirer/core";
 import chalk from "chalk";
 const logs = [];
-const log = true;
+const log = false;
 const TextualInputPrompt = createPrompt((config, done) => {
   const {
     required = false,
@@ -39,7 +40,7 @@ const TextualInputPrompt = createPrompt((config, done) => {
 
     const currentLine = lineReader.line;
     logs.push("1");
-    logs.push(input)
+    logs.push(input);
     setError(undefined);
 
     if (isEnterKey(keyPressed)) {
@@ -55,7 +56,7 @@ const TextualInputPrompt = createPrompt((config, done) => {
       } else if (validate(answer) !== true) {
         logs.push("4");
         lineReader.write(input);
-        setInput(input)
+        setInput(input);
         setError(validate(answer));
         return;
       }
@@ -69,6 +70,7 @@ const TextualInputPrompt = createPrompt((config, done) => {
     }
 
     logs.push("6");
+
     if (isBackspaceKey(keyPressed)) {
       logs.push("7");
 
@@ -77,9 +79,13 @@ const TextualInputPrompt = createPrompt((config, done) => {
         logs.push("8");
         if (isEmpty(input)) {
           logs.push("9");
-          if (required)
+          if (required) {
+            logs.push("9.2");
             setError("Default cannot be removed for a required answer");
-          else setIsDefaultActive(false);
+          } else {
+            logs.push("9.2");
+            setIsDefaultActive(false);
+          }
         }
       } else if (ignoreTimeout.current) {
         logs.push("10");
@@ -98,10 +104,12 @@ const TextualInputPrompt = createPrompt((config, done) => {
     }
 
     logs.push("12");
+
     if (keyPressed.name === "tab") {
       logs.push("13");
       if (isDefaultActive) {
         logs.push("14");
+        lineReader.clearLine(0);
         lineReader.write(config.default);
         setInput(config.default);
       }
@@ -116,7 +124,14 @@ const TextualInputPrompt = createPrompt((config, done) => {
   const message = theme.style.message(config.message, status);
   let formattedValue = input;
 
-  setIsDefaultActive(isEmpty(input));
+  // logs.push(isEmpty(input));
+  useEffect(
+    function () {
+      setIsDefaultActive(isEmpty(input));
+    },
+    [input]
+  );
+
   if (status === "done") {
     return [
       [prefix, message, input].join(" "),
@@ -133,7 +148,9 @@ const TextualInputPrompt = createPrompt((config, done) => {
       defaultMessage,
       errorMessage,
       logs.slice(0, log ? undefined : 0).join(", "),
-    ].join("\n"),
+    ]
+      .filter(Boolean)
+      .join("\n"),
   ];
   // const defaultHint = _if(defaultInUse, defaultHintInit, "");
   // return [

@@ -3,7 +3,7 @@ import TextualInputPrompt from "#prompts/textualInputPrompt/textualInputPrompt.j
 export async function Test_TextualInputPrompt() {
   const answer = await TextualInputPrompt({
     message: "What is your name?",
-    required: true,
+    // required: true,
     default: "John Smith",
     validate: (input) => (input?.length > 3 ? true : "Answer too short (4)"),
   });
