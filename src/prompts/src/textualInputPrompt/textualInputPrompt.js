@@ -1,5 +1,9 @@
-import { defualtTheme, padStringLines, STATUS } from "#prompts/common.js";
-import { usePrefix } from "#prompts/usePrefix.js";
+import {
+  defualtTheme,
+  padStringLines,
+  STATUS,
+} from "#prompts/common/common.js";
+import { usePrefix } from "#prompts/common/usePrefix.js";
 import { _if, fallback, I, isEmpty } from "#utilities/util.js";
 import {
   createPrompt,

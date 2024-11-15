@@ -1,19 +1,7 @@
-import { startBaseMCPromptTest } from "./baseMCPromptTest.js";
-import { startTextInputPrompt2Test } from "./baseTextInputPromp2Test.js";
-import { startTextInputPrompt3Test } from "./baseTextInputPromp3Test.js";
-import { startTextInputPrompt4Test } from "./baseTextInputPromp4Test.js";
-import { startTextInputPromptTest } from "./baseTextInputPrompTest.js";
-import { startConfirmPromptTest } from "./confirmPromptTest.js";
-import originalTests from "./originalInputPromptTest.js";
-import { Test_TextualInputPrompt } from "./tests_textualInputPrompt/test_textualInputPrompt.js";
+import { startBaseMCPromptTest } from "./tests_baseMCPrompt/baseMCPromptTest.js";
+import { startConfirmPromptTest } from "./tests_baseMCPrompt/confirmPromptTest.js";
+import { startTextualInputPromptTest } from "./tests_textualInputPrompt/test_textualInput.js";
 
-// startBaseMCPromptTest();
-// startConfirmPromptTest();
-// startTextInputPromptTest();
-
-// originalTests();
-
-// startTextInputPrompt2Test()
-// startTextInputPrompt4Test();
-
-Test_TextualInputPrompt();
+await startBaseMCPromptTest();
+await startConfirmPromptTest();
+await startTextualInputPromptTest();

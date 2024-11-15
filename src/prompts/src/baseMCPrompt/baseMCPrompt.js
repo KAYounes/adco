@@ -1,4 +1,4 @@
-import { _if } from '#utilities/util.js';
+import { _if } from "#utilities/util.js";
 import {
   createPrompt,
   isBackspaceKey,
@@ -16,15 +16,21 @@ import {
   useRef,
   useState,
   ValidationError,
-} from '@inquirer/core';
-import ansiEscapes from 'ansi-escapes';
-import chalk from 'chalk';
-import { defualtTheme, isSelectable, normalizeChoices, padStringLines, toEmptyLines } from './common.js';
-import { usePrefix } from './usePrefix.js';
+} from "@inquirer/core";
+import ansiEscapes from "ansi-escapes";
+import chalk from "chalk";
+import {
+  defualtTheme,
+  isSelectable,
+  normalizeChoices,
+  padStringLines,
+  toEmptyLines,
+} from "#prompts/common/common.js";
+import { usePrefix } from "#prompts/common/usePrefix.js";
 
 const BaseMCPrompt = createPrompt(function (config, done) {
   const [locked, setLocked] = useState(config?.delay > 0 ? true : false);
-  const [status, setStatus] = useState(locked ? 'loading' : 'idle');
+  const [status, setStatus] = useState(locked ? "loading" : "idle");
 
   const firstRender = useRef(true);
   const searchTimeoutRef = useRef();
@@ -34,23 +40,32 @@ const BaseMCPrompt = createPrompt(function (config, done) {
 
   const { loop = true, pageSize = 7 } = config;
 
-  const items = useMemo(() => normalizeChoices(config.choices), [config.choices]);
+  const items = useMemo(
+    () => normalizeChoices(config.choices),
+    [config.choices]
+  );
 
   const bounds = useMemo(() => {
     const first = items.findIndex(isSelectable);
     const last = items.findLastIndex(isSelectable);
 
     if (first === -1) {
-      throw new ValidationError('[select prompt] No selectable choices. All choices are disabled.');
+      throw new ValidationError(
+        "[select prompt] No selectable choices. All choices are disabled."
+      );
     }
 
     return { first, last };
   }, [items]);
   const defaultItemIndex = useMemo(() => {
-    if (!('default' in config)) return -1;
-    return items.findIndex((item) => isSelectable(item) && item.value === config.default);
+    if (!("default" in config)) return -1;
+    return items.findIndex(
+      (item) => isSelectable(item) && item.value === config.default
+    );
   }, [config.default, items]);
-  const [active, setActive] = useState(defaultItemIndex === -1 ? bounds.first : defaultItemIndex);
+  const [active, setActive] = useState(
+    defaultItemIndex === -1 ? bounds.first : defaultItemIndex
+  );
 
   // Safe to assume the cursor position always point to a Choice.
   const selectedChoice = items[active];
@@ -60,7 +75,7 @@ const BaseMCPrompt = createPrompt(function (config, done) {
 
     const timer = setTimeout(function () {
       setLocked(false);
-      setStatus('idle');
+      setStatus("idle");
     }, config.delay);
 
     return () => clearTimeout(timer);
@@ -73,13 +88,17 @@ const BaseMCPrompt = createPrompt(function (config, done) {
 
     // Enter key => set status to done
     if (isEnterKey(key)) {
-      setStatus('done');
+      setStatus("done");
       done(selectedChoice.value);
     }
     // arrow keys
     else if (isUpKey(key) || isDownKey(key)) {
       rl.clearLine(0);
-      if (loop || (isUpKey(key) && active !== bounds.first) || (isDownKey(key) && active !== bounds.last)) {
+      if (
+        loop ||
+        (isUpKey(key) && active !== bounds.first) ||
+        (isDownKey(key) && active !== bounds.last)
+      ) {
         const offset = isUpKey(key) ? -1 : 1;
         let next = active;
         do {
@@ -125,36 +144,42 @@ const BaseMCPrompt = createPrompt(function (config, done) {
     () => () => {
       clearTimeout(searchTimeoutRef.current);
     },
-    [],
+    []
   );
 
   const message = theme.style.message(config.message, status);
 
   //   let helpMessage = config.help ? theme.style.help(config.help) : '';
   const helpMessage = _if(config.help, theme.style.help(config.help), null);
-  const useArrowKeys = theme.style.help('(Use arrow keys)');
+  const useArrowKeys = theme.style.help("(Use arrow keys)");
 
   const page = usePagination({
     items,
     active,
     renderItem({ item, index, isActive }) {
       let itemText = item.name;
-      let itemUserArrowKeys = '';
+      let itemUserArrowKeys = "";
       if (Separator.isSeparator(item)) {
         return ` ${item.separator}`;
       }
 
       // useArrowKeys message for first item in the list of choices
       if (index === 0) {
-        if (theme.helpMode === 'always' || (theme.helpMode === 'auto' && firstRender.current)) {
+        if (
+          theme.helpMode === "always" ||
+          (theme.helpMode === "auto" && firstRender.current)
+        ) {
           firstRender.current = false;
           itemUserArrowKeys = useArrowKeys;
         }
       }
 
       if (item.disabled) {
-        const disabledLabel = typeof item.disabled === 'string' ? item.disabled : '(disabled)';
-        return theme.style.disabled(`${disabledLabel} ${itemText}${itemUserArrowKeys}`);
+        const disabledLabel =
+          typeof item.disabled === "string" ? item.disabled : "(disabled)";
+        return theme.style.disabled(
+          `${disabledLabel} ${itemText}${itemUserArrowKeys}`
+        );
       }
 
       const color = isActive ? theme.style.currentChoice : chalk.dim;
@@ -165,27 +190,38 @@ const BaseMCPrompt = createPrompt(function (config, done) {
   });
 
   const whenAnswered = theme.style.message(config.whenAnswered, status);
-  if (status === 'done') {
+  if (status === "done") {
     return `${prefix} ${message}${theme.style.answer(selectedChoice.short)}`;
   }
 
-  const choiceDescription = _if(selectedChoice.description, theme.style.description(selectedChoice.description), null);
+  const choiceDescription = _if(
+    selectedChoice.description,
+    theme.style.description(selectedChoice.description),
+    null
+  );
 
   // first line of the promt
-  const firstLine = [prefix, message, helpMessage].filter(Boolean).join('');
+  const firstLine = [prefix, message, helpMessage].filter(Boolean).join("");
 
   // prompt choices
   // replace choices when locked with empty lines to avoid flickering when unlocking
   const choices = locked ? toEmptyLines(page) : padStringLines(page, prefix);
 
   // lines below the choices (e.g. choice description)
-  const moreLine = padStringLines(_if(choiceDescription, `\n${chalk.cyan('More:')}\n${choiceDescription}`, ''), prefix);
+  const moreLine = padStringLines(
+    _if(
+      choiceDescription,
+      `\n${chalk.cyan("More:")}\n${choiceDescription}`,
+      ""
+    ),
+    prefix
+  );
 
   // prompt array
   const prompt = [firstLine, choices, moreLine, ansiEscapes.cursorHide];
 
   // retrun prompt as a string
-  return prompt.join('\n');
+  return prompt.join("\n");
 });
 
 export { BaseMCPrompt };
