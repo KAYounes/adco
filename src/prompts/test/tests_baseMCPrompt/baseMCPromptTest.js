@@ -1,11 +1,11 @@
-import { BaseMCPrompt } from "#prompts/src/baseMCPrompt/baseMCPrompt.js";
+import BaseMCPrompt from "#prompts/src/baseMCPrompt/baseMCPrompt.js";
 import { Separator } from "@inquirer/core";
 import chalk from "chalk";
 
 export async function startBaseMCPromptTest() {
   await BaseMCPrompt({
     message: "Please select your preferred option from the list below",
-    whenAnswered: "Installation Preference",
+    // whenAnswered: "Installation Preference",
     help: "tip: just choose",
     choices: [
       {

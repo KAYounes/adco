@@ -223,4 +223,4 @@ const BaseMCPrompt = createPrompt(function (config, done) {
   return prompt.join("\n");
 });
 
-export { BaseMCPrompt };
+export default BaseMCPrompt;

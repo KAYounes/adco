@@ -1,3 +1,3 @@
 import { begin_prompts } from "#prompts/index.js";
 
-begin_prompts();
+console.log(await begin_prompts());

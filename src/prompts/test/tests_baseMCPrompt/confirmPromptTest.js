@@ -1,4 +1,4 @@
-import { BaseMCPrompt } from "#prompts/src/baseMCPrompt/baseMCPrompt.js";
+import BaseMCPrompt from "#prompts/src/baseMCPrompt/baseMCPrompt.js";
 
 export async function startConfirmPromptTest() {
   await BaseMCPrompt(
