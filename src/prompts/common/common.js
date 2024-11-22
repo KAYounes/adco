@@ -68,7 +68,7 @@ export const defualtTheme = {
   icon: { cursor: `${figures.play} ` },
   style: {
     currentChoice: function (choice) {
-      return chalk.green.underline(choice);
+      return chalk.green(choice);
     },
     answer: function (string) {
       return ` => ${chalk.cyan(string)}`;

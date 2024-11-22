@@ -57,12 +57,14 @@ const BaseMCPrompt = createPrompt(function (config, done) {
 
     return { first, last };
   }, [items]);
+
   const defaultItemIndex = useMemo(() => {
     if (!("default" in config)) return -1;
     return items.findIndex(
       (item) => isSelectable(item) && item.value === config.default
     );
   }, [config.default, items]);
+
   const [active, setActive] = useState(
     defaultItemIndex === -1 ? bounds.first : defaultItemIndex
   );
@@ -159,8 +161,14 @@ const BaseMCPrompt = createPrompt(function (config, done) {
     renderItem({ item, index, isActive }) {
       let itemText = item.name;
       let itemUserArrowKeys = "";
+      let indicateDefault = "";
+
       if (Separator.isSeparator(item)) {
         return ` ${item.separator}`;
+      }
+
+      if (index == defaultItemIndex && firstRender.current) {
+        indicateDefault = chalk.gray("(default)");
       }
 
       // useArrowKeys message for first item in the list of choices
@@ -183,7 +191,10 @@ const BaseMCPrompt = createPrompt(function (config, done) {
       }
 
       const color = isActive ? theme.style.currentChoice : chalk.dim;
-      return color(`${itemText}`);
+      const cursor = isActive ? ">>" : " -";
+      return color(
+        `${cursor} ${itemText} ${indicateDefault} ${itemUserArrowKeys}`
+      );
     },
     pageSize,
     loop,
